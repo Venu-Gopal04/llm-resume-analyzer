@@ -1,196 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Me API Playground</title>
+  <meta charset="UTF-8" />
+  <title>AI Resume Analyzer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<style>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
     * {
-        box-sizing: border-box;
-        font-family: "Segoe UI", Arial, sans-serif;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
     }
 
     body {
-        margin: 0;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 40px;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
     }
 
-    .profile-card {
-        background: #ffffff;
-        width: 100%;
-        max-width: 900px;
-        border-radius: 16px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        padding: 40px;
-        animation: fadeIn 0.6s ease;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .header {
-        display: flex;
-        align-items: center;
-        gap: 25px;
-        margin-bottom: 30px;
-    }
-
-    .avatar {
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        font-size: 36px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .card {
+      background: #fff;
+      width: 100%;
+      max-width: 520px;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      text-align: center;
     }
 
     h1 {
-        margin: 0;
-        font-size: 32px;
-        color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 26px;
+      color: #2d3748;
     }
 
-    .section {
-        margin-bottom: 25px;
+    p {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 25px;
     }
 
-    .label {
-        font-weight: 600;
-        color: #555;
-        margin-bottom: 6px;
+    .upload-box {
+      border: 2px dashed #cbd5e0;
+      border-radius: 12px;
+      padding: 30px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-bottom: 20px;
     }
 
-    .value {
-        font-size: 16px;
-        color: #333;
+    .upload-box:hover {
+      border-color: #667eea;
+      background: #f7f9ff;
     }
 
-    .skills {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 10px;
+    input[type="file"] {
+      display: none;
     }
 
-    .skill-badge {
-        background: #eef2ff;
-        color: #3f51b5;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 500;
+    .upload-text {
+      font-size: 15px;
+      color: #555;
     }
 
-    .links a {
-        display: inline-block;
-        margin-right: 15px;
-        text-decoration: none;
-        color: #667eea;
-        font-weight: 600;
+    button {
+      background: #667eea;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: 0.3s;
     }
 
-    .links a:hover {
-        text-decoration: underline;
+    button:hover {
+      background: #5a67d8;
     }
 
-    .footer {
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
-        text-align: center;
-        color: #777;
-        font-size: 14px;
+    .result {
+      margin-top: 20px;
+      text-align: left;
+      background: #f7fafc;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+      white-space: pre-wrap;
     }
-</style>
+
+    footer {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
 </head>
-
 <body>
-  <div class="profile-card">
-    <div class="header">
-      <div class="avatar">AI</div>
-      <h1>LLM Resume Analyzer</h1>
-    </div>
 
-    <div class="section">
-      <label class="label">Upload Resume (PDF)</label>
-      <input type="file" id="resumeFile" accept=".pdf" />
-      <button onclick="analyzeResume()">Analyze Resume</button>
-    </div>
+  <div class="card">
+    <h1>AI Resume Analyzer</h1>
+    <p>Upload your resume and get instant AI-powered feedback</p>
 
-    <div id="loading" style="display:none; margin-top:15px;">
-      ⏳ Analyzing resume with AI...
-    </div>
+    <label class="upload-box">
+      <input type="file" id="resumeFile" accept=".pdf,.doc,.docx">
+      <div class="upload-text">📄 Click to upload your resume</div>
+    </label>
 
-    <div id="results" style="margin-top:25px;"></div>
+    <button onclick="analyzeResume()">Analyze Resume</button>
 
-    <div class="footer">
-      Built with FastAPI • LLM • Resume AI
-    </div>
+    <div class="result" id="resultBox"></div>
+
+    <footer>
+      Powered by FastAPI & LLMs
+    </footer>
   </div>
 
-<script>
-async function analyzeResume() {
-  const fileInput = document.getElementById("resumeFile");
-  const resultsDiv = document.getElementById("results");
-  const loading = document.getElementById("loading");
+  <script>
+    async function analyzeResume() {
+      const fileInput = document.getElementById("resumeFile");
+      const resultBox = document.getElementById("resultBox");
 
-  if (!fileInput.files.length) {
-    alert("Please upload a resume PDF");
-    return;
-  }
+      if (!fileInput.files.length) {
+        alert("Please upload a resume first.");
+        return;
+      }
 
-  const formData = new FormData();
-  formData.append("file", fileInput.files[0]);
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
 
-  resultsDiv.innerHTML = "";
-  loading.style.display = "block";
+      resultBox.style.display = "block";
+      resultBox.textContent = "⏳ Analyzing your resume...";
 
-  try {
-    const response = await fetch("/analyze-resume-llm", {
-      method: "POST",
-      body: formData
-    });
+      try {
+        const response = await fetch("/analyze", {
+          method: "POST",
+          body: formData
+        });
 
-    const data = await response.json();
-    loading.style.display = "none";
-
-    resultsDiv.innerHTML = `
-      <h3>Professional Summary</h3>
-      <p>${data.professional_summary}</p>
-
-      <h3>Key Strengths</h3>
-      <div class="skills">
-        ${data.key_strengths.map(s => `<span class="skill-badge">${s}</span>`).join("")}
-      </div>
-
-      <h3>Missing Skills</h3>
-      <div class="skills">
-        ${data.missing_skills.map(s => `<span class="skill-badge">${s}</span>`).join("")}
-      </div>
-
-      <h3>Job Fit Score</h3>
-      <p><strong>${data.job_fit_score} / 100</strong></p>
-    `;
-  } catch (err) {
-    loading.style.display = "none";
-    resultsDiv.innerHTML = "<p style='color:red;'>Error analyzing resume</p>";
-  }
-}
-</script>
+        const data = await response.json();
+        resultBox.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        resultBox.textContent = "❌ Error analyzing resume.";
+      }
+    }
+  </script>
 
 </body>
-
-
 </html>
+
 
