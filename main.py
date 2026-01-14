@@ -88,36 +88,34 @@ async def analyze_resume(file: UploadFile = File(...)):
         "resume_score": score,
         "summary": summary
     }
-@app.post("/analyze-resume-llm")
-async def analyze_resume_llm(file: UploadFile = File(...)):
+@app.post("/analyze")
+async def analyze_resume(file: UploadFile = File(...)):
     content = await file.read()
-    resume_text = content.decode(errors="ignore")
+    text = content.decode(errors="ignore").lower()
 
-    prompt = f"""
-    Analyze the following resume and provide:
-    1. Professional summary (2–3 lines)
-    2. Key strengths
-    3. Missing skills for AI/ML roles
-    4. Job-fit score out of 100
+    skills_db = [
+        "python", "fastapi", "sql", "machine learning",
+        "deep learning", "ai", "llm", "nlp"
+    ]
 
-    Resume:
-    {resume_text}
-    """
+    found_skills = [skill for skill in skills_db if skill in text]
+
+    score = min(len(found_skills) * 15 + (10 if "python" in found_skills else 0), 100)
+
+    summary = (
+        "Excellent AI/ML profile"
+        if score >= 70
+        else "Good AI/ML foundation"
+        if score >= 40
+        else "Needs more AI/ML keywords"
+    )
+
     return {
-    "professional_summary": "This is a dummy response. OpenAI quota exhausted.",
-    "key_strengths": [
-        "Python",
-        "FastAPI",
-        "REST APIs",
-        "Basic AI/ML knowledge"
-    ],
-    "missing_skills": [
-        "Deep Learning",
-        "MLOps",
-        "Model deployment"
-    ],
-    "job_fit_score": 70
-}
+        "skills_found": found_skills,
+        "resume_score": score,
+        "summary": summary
+    }
+
 
 
 
