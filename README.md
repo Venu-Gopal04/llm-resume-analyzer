@@ -5,7 +5,7 @@ A backend-focused web application that analyzes resumes and provides:
 - Detected technical skills
 - AI/ML readiness feedback
 
-Built using FastAPI with a clean frontend and deployed on Render.
+Built using FastAPI with a simple frontend and deployed on Render.
 
 ---
 
@@ -20,7 +20,7 @@ https://github.com/Venu-Gopal04/llm-resume-analyzer
 ---
 
 ## 🛠 Tech Stack
-- Python
+- Python 3.10+
 - FastAPI
 - HTML, CSS, JavaScript
 - Render (deployment)
@@ -29,64 +29,95 @@ https://github.com/Venu-Gopal04/llm-resume-analyzer
 
 ## ⚙️ Architecture Overview
 1. Frontend UI allows users to upload resumes
-2. Resume is sent to FastAPI backend
-3. Backend extracts text from resume
+2. Resume is sent to FastAPI backend via REST API
+3. Backend reads and decodes resume text
 4. Keywords are matched using weighted scoring logic
 5. Resume score and feedback are returned as JSON
-6. UI displays score, skills, and summary
+6. UI renders score, skills, and summary
 
 ---
 
-## 🔌 API Endpoint
+## 🔌 API Schema
 
-**Input:** Resume file  
-**Output:**  
-- resume_score  
-- skills_found  
-- summary  
+### POST `/analyze-resume`
+
+**Input**
+- Multipart form-data
+- Field: `file` (resume file)
+
+**Response**
+   json
+{
+  "resume_score": 70,
+  "skills_found": ["python", "fastapi", "ml"],
+  "summary": "Good backend / AI foundation"
+}
+
+
+## Resume Scoring Logic
+
+The resume analyzer uses a weighted keyword-based scoring mechanism.
+
+Each important skill contributes a predefined weight to the final score:
+
+- Python: 15 points  
+- FastAPI: 10 points  
+- SQL: 10 points  
+- Machine Learning: 20 points  
+- Deep Learning: 20 points  
+- NLP: 15 points  
+- LLM / AI: 10 points  
+
+The resume text is decoded and converted to lowercase.  
+If a keyword is found, its corresponding weight is added to the score.
+
+The final score is capped at **100**.
+
+
+
+## Minimal Evaluation
+
+The system was tested using multiple resumes with varying skill sets.
+
+Example evaluation:
+
+| Resume Type | Detected Skills | Score |
+|------------|---------------|-------|
+| AI-focused resume | Python, ML, DL, NLP | 75 |
+| Backend resume | Python, FastAPI, SQL | 35 |
+| Non-technical resume | None | 0 |
+
+This demonstrates that the scoring logic differentiates resumes based on relevant skills.
 
 ---
 
-## 📈 Resume Scoring Logic
-Each skill has a weight:
-- Python: 15
-- FastAPI: 10
-- SQL: 10
-- Machine Learning: 20
-- Deep Learning: 20
-- NLP: 15
-- LLM: 20
-- AI: 10
+## Remarks (Limitations & Trade-offs)
 
-Score is capped at 100.
+- This version uses **keyword matching**, not semantic understanding.
+- No embeddings or vector search are used.
+- PDF/DOC formatting noise may affect keyword detection.
+- Scoring logic is rule-based, not learned.
+
+These trade-offs were chosen to keep the system **simple, explainable, and production-ready for an internship task**.
 
 ---
 
-## 🧪 Minimal Evaluation
-Tested with 5 resumes:
-- AI-heavy resumes scored higher
-- Non-AI resumes scored lower
-- Skill detection matched expected keywords
+## Future Improvements
 
-This confirms acceptable precision for an internship-level project.
-
----
-
-## ⚠️ Limitations & Trade-offs
-- Uses keyword-based analysis (no semantic embeddings)
-- No PDF parsing optimizations
-- No job-description comparison
+- Add semantic search using embeddings
+- Support PDF/DOC parsing with better text extraction
+- Introduce role-based scoring (AI Engineer, Backend, Data Scientist)
+- Integrate LLM-based feedback generation
+- Store historical resume analysis results
 
 ---
 
-## 🚀 Future Improvements
-- Add embedding-based semantic matching
-- Compare resume with job descriptions
-- Use LLM-generated personalized feedback
-- Add authentication and logging
+## Local Setup Instructions
 
----
-
-## 👨‍💻 Author
-Venu Gopal  
-Backend / AI Intern Aspirant
+  
+git clone https://github.com/Venu-Gopal04/llm-resume-analyzer
+cd llm-resume-analyzer
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload
