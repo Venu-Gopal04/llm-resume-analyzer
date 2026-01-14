@@ -65,15 +65,40 @@ async def analyze_resume(file: UploadFile = File(...)):
     content = await file.read()
     text = content.decode(errors="ignore").lower()
 
-    skills_db = [
-        "python", "fastapi", "sql", "machine learning",
-        "deep learning", "ai", "llm", "nlp"
-    ]
+    weights = {
+        "python": 15,
+        "fastapi": 10,
+        "sql": 10,
+        "machine learning": 20,
+        "deep learning": 20,
+        "nlp": 15,
+        "llm": 20,
+        "ai": 10
+    }
 
-    found_skills = [skill for skill in skills_db if skill in text]
+    found_skills = []
+    score = 0
 
-    score = min(len(found_skills) * 20 + (10 if "python" in found_skills else 0), 100)
+    for skill, weight in weights.items():
+        if skill in text:
+            found_skills.append(skill)
+            score += weight
 
+    score = min(score, 100)
+
+    summary = (
+        "Excellent AI/ML profile"
+        if score >= 70
+        else "Good AI/ML foundation"
+        if score >= 40
+        else "Needs more AI/ML keywords"
+    )
+
+    return {
+        "skills_found": found_skills,
+        "resume_score": score,
+        "summary": summary
+    }
 
     summary = (
         "Excellent AI/ML profile"

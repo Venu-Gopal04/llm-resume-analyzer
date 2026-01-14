@@ -171,12 +171,12 @@
       document.getElementById("scoreText").textContent = "Analyzing...";
       document.getElementById("progressBar").style.width = "0%";
 
-      const response = await fetch("/analyze", {
+      const response = await fetch("/analyze-resume", {
         method: "POST",
         body: formData
       });
 
-      const data = await response.json();
+    const data = await response.json();
 
       // Score
       document.getElementById("scoreText").textContent =
